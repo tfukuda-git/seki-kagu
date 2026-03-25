@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>関家具 LINEミニアプリ モック</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --line-green: #06C755;
+    --line-green-dark: #04A344;
+    --seki-warm: #8B6914;
+    --seki-light: #F5EDD9;
+    --seki-cream: #FAF6EE;
+    --seki-dark: #2C1810;
+    --seki-mid: #6B4226;
+    --accent-gold: #C9970A;
+    --gray-100: #F7F7F7;
+    --gray-200: #EEEEEE;
+    --gray-400: #AAAAAA;
+    --gray-600: #666666;
+    --gray-800: #333333;
+    --error: #E53E3E;
+    --phone-w: 375px;
+    --phone-h: 812px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #1a1208;
+    background-image: radial-gradient(ellipse at 20% 20%, #2d1f0a 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, #1a2a0a 0%, transparent 60%);
+    min-height: 100vh;
+    color: var(--gray-800);
+  }
+  
+  /* ===== HEADER ===== */
+  .page-header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    color: #fff;
+  }
+  .page-header .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--line-green);
+    margin-bottom: 8px;
+  }
+  .page-header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #F5EDD9;
+    margin-bottom: 6px;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: #aaa;
+  }
+
+  /* ===== SCREEN NAV ===== */
+  .screen-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 24px 32px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ccc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--line-green);
+    border-color: var(--line-green);
+    color: #fff;
+  }
+
+  /* ===== SCREENS CONTAINER ===== */
+  .screens-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 0 24px 64px;
+  }
+  .screen-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .screen-panel.active { display: flex; }
+  .screen-label {
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* ===== PHONE SHELL ===== */
+  .phone {
+    width: var(--phone-w);
+    height: var(--phone-h);
+    background: #fff;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 10px #1a1a1a,
+      0 0 0 12px #333,
+      0 40px 80px rgba(0,0,0,0.6);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .status-bar .notch {
+    width: 120px;
+    height: 28px;
+    background: #000;
+    border-radius: 0 0 14px 14px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .status-bar .time { font-size: 15px; font-weight: 700; z-index: 1; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; z-index: 1; }
+  
+  /* LINE header */
+  .line-header {
+    background: var(--line-green);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .line-header .back { font-size: 18px; cursor: pointer; }
+  .line-header h2 { font-size: 17px; font-weight: 700; flex: 1; text-align: center; }
+  .line-header .right { width: 24px; }
+
+  /* Screen content */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--seki-cream);
+    -webkit-overflow-scrolling: touch;
+  }
+  .screen-content::-webkit-scrollbar { display: none; }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    height: 83px;
+    background: #fff;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--gray-400);
+    cursor: pointer;
+  }
+  .tab-item.active { color: var(--line-green); }
+  .tab-item .tab-icon { font-size: 22px; line-height: 1; }
+
+  /* ===== SCREEN 1: 会員証 ===== */
+  .member-card-wrap {
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .store-banner {
+    background: linear-gradient(135deg, var(--seki-mid) 0%, var(--seki-dark) 100%);
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .store-banner::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .store-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 20px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+  }
+  .store-logo {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+  }
+  .store-tagline { font-size: 11px; opacity: 0.7; letter-spacing: 2px; margin-bottom: 20px; }
+  .member-info { display: flex; justify-content: space-between; align-items: flex-end; }
+  .member-name { font-size: 18px; font-weight: 700; }
+  .member-rank {
+    background: var(--accent-gold);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+  }
+  .member-id { font-size: 11px; opacity: 0.6; margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+  .barcode-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .barcode-label { font-size: 11px; color: var(--gray-400); letter-spacing: 1px; }
+  .barcode-img {
+    width: 280px;
+    height: 80px;
+    background: repeating-linear-gradient(
+      90deg,
+      #000 0px, #000 2px, #fff 2px, #fff 4px,
+      #000 4px, #000 5px, #fff 5px, #fff 8px,
+      #000 8px, #000 10px, #fff 10px, #fff 13px,
+      #000 13px, #000 15px, #fff 15px, #fff 17px,
+      #000 17px, #000 18px, #fff 18px, #fff 22px,
+      #000 22px, #000 25px, #fff 25px, #fff 27px,
+      #000 27px, #000 28px, #fff 28px, #fff 32px
+    );
+    border-radius: 4px;
+  }
+  .barcode-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gray-600);
+  }
+  .qr-block {
+    width: 80px; height: 80px;
+    background: #000;
+    border-radius: 8px;
+    padding: 8px;
+    position: relative;
+  }
+  .qr-inner {
+    width: 100%;
+    height: 100%;
+    background: 
+      repeating-conic-gradient(#fff 0% 25%, #000 0% 50%) 0 0 / 8px 8px;
+    opacity: 0.9;
+  }
+
+  .points-row {
+    display: flex;
+    gap: 12px;
+  }
+  .points-card {
+    flex: 1;
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .points-card .pt-label { font-size: 11px; color: var(--gray-400); margin-bottom: 8px; }
+  .points-card .pt-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--seki-warm);
+  }
+  .points-card .pt-unit { font-size: 13px; color: var(--gray-600); margin-left: 2px; }
+  .points-card .pt-expire { font-size: 10px; color: var(--gray-400); margin-top: 4px; }
+  .use-btn {
+    background: var(--line-green);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    width: 100%;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+
+  /* ===== SCREEN 2: 会員登録 ===== */
+  .register-wrap {
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .register-hero {
+    text-align: center;
+    padding: 8px 0;
+  }
+  .register-hero .hero-icon { font-size: 48px; margin-bottom: 8px; }
+  .register-hero h3 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    color: var(--seki-dark);
+    margin-bottom: 6px;
+  }
+  .register-hero p { font-size: 13px; color: var(--gray-600); line-height: 1.8; }
+  
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-weight: 700; color: var(--gray-600); letter-spacing: 0.5px; }
+  .form-group label .req { color: var(--error); margin-left: 4px; }
+  .form-input {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--gray-800);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--line-green); }
+  .form-input.filled { border-color: var(--gray-200); color: var(--gray-800); }
+  .form-hint { font-size: 11px; color: var(--gray-400); }
+  .error-msg { font-size: 11px; color: var(--error); display: flex; align-items: center; gap: 4px; }
+
+  .benefits-box {
+    background: var(--seki-light);
+    border-radius: 12px;
+    padding: 16px;
+    border-left: 3px solid var(--accent-gold);
+  }
+  .benefits-box .b-title { font-size: 12px; font-weight: 700; color: var(--seki-warm); margin-bottom: 8px; }
+  .benefit-item { font-size: 12px; color: var(--gray-600); padding: 3px 0; display: flex; gap: 8px; }
+  
+  .submit-btn {
+    background: var(--line-green);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(6,199,85,0.3);
+  }
+  .submit-btn:disabled { background: var(--gray-200); color: var(--gray-400); box-shadow: none; }
+  .agree-text { font-size: 11px; color: var(--gray-400); text-align: center; line-height: 1.8; }
+  .agree-text a { color: var(--line-green); text-decoration: none; }
+
+  /* ===== SCREEN 3: ポイント履歴 ===== */
+  .points-wrap { padding: 0; }
+  .points-summary {
+    background: linear-gradient(135deg, var(--seki-warm) 0%, var(--seki-mid) 100%);
+    padding: 24px 20px;
+    color: white;
+  }
+  .points-summary .ps-label { font-size: 12px; opacity: 0.8; letter-spacing: 1px; margin-bottom: 4px; }
+  .points-summary .ps-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .points-summary .ps-unit { font-size: 18px; margin-left: 4px; opacity: 0.9; }
+  .points-summary .ps-expire { font-size: 12px; opacity: 0.7; margin-top: 8px; }
+  .points-actions { display: flex; gap: 12px; margin-top: 16px; }
+  .pt-action-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    text-align: center;
+    cursor: pointer;
+  }
+  .pt-action-btn.primary { background: white; color: var(--seki-warm); border-color: white; }
+
+  .history-section { padding: 20px 16px; }
+  .section-title { font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 12px; letter-spacing: 0.5px; }
+  .history-list { display: flex; flex-direction: column; gap: 2px; }
+  .history-item {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .h-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .h-icon.earn { background: #EBF8F0; }
+  .h-icon.use { background: #FEF0ED; }
+  .h-icon.expire { background: #FFF8E6; }
+  .h-info { flex: 1; }
+  .h-title { font-size: 14px; font-weight: 500; color: var(--gray-800); }
+  .h-date { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+  .h-pts { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; }
+  .h-pts.earn { color: var(--line-green); }
+  .h-pts.use { color: var(--error); }
+  .h-pts.expire { color: var(--gray-400); }
+
+  /* ===== SCREEN 4: ポイント利用 ===== */
+  .use-wrap { padding: 24px 16px; display: flex; flex-direction: column; gap: 20px; }
+  .balance-display {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .balance-display .bd-label { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
+  .balance-display .bd-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 42px;
+    color: var(--seki-warm);
+    font-weight: 500;
+  }
+  .balance-display .bd-unit { font-size: 16px; color: var(--gray-600); }
+  .balance-display .bd-yen { font-size: 13px; color: var(--gray-400); margin-top: 6px; }
+
+  .input-section { display: flex; flex-direction: column; gap: 10px; }
+  .input-section label { font-size: 13px; font-weight: 700; color: var(--gray-600); }
+  .pt-input-row { display: flex; align-items: center; gap: 10px; }
+  .pt-input {
+    flex: 1;
+    background: white;
+    border: 2px solid var(--line-green);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 24px;
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+    color: var(--gray-800);
+    font-weight: 500;
+    outline: none;
+  }
+  .pt-input-unit { font-size: 18px; color: var(--gray-600); font-weight: 700; }
+  .quick-btns { display: flex; gap: 8px; }
+  .quick-btn {
+    flex: 1;
+    background: var(--seki-light);
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--seki-warm);
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .conversion-box {
+    background: var(--seki-light);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .conversion-box .cv-label { font-size: 13px; color: var(--gray-600); }
+  .conversion-box .cv-value { font-size: 18px; font-weight: 700; color: var(--seki-dark); }
+
+  /* ===== SCREEN 5: クーポン ===== */
+  .coupons-wrap { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .coupon-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+  }
+  .coupon-left {
+    width: 8px;
+    background: linear-gradient(180deg, var(--line-green) 0%, var(--line-green-dark) 100%);
+    flex-shrink: 0;
+  }
+  .coupon-left.gold { background: linear-gradient(180deg, var(--accent-gold) 0%, #a07008 100%); }
+  .coupon-left.blue { background: linear-gradient(180deg, #4ECDC4 0%, #2BA8A0 100%); }
+  .coupon-body { flex: 1; padding: 16px; }
+  .coupon-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--line-green);
+    background: #EBF8F0;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .coupon-tag.gold { color: var(--accent-gold); background: #FEF8E7; }
+  .coupon-tag.blue { color: #2BA8A0; background: #E8F8F7; }
+  .coupon-title { font-size: 16px; font-weight: 700; color: var(--seki-dark); margin-bottom: 4px; }
+  .coupon-desc { font-size: 12px; color: var(--gray-600); line-height: 1.6; margin-bottom: 12px; }
+  .coupon-footer { display: flex; align-items: center; justify-content: space-between; }
+  .coupon-expire { font-size: 11px; color: var(--gray-400); }
+  .coupon-use-btn {
+    background: var(--line-green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .coupon-use-btn.gold { background: var(--accent-gold); }
+
+  /* ===== SCREEN 6: 登録完了 ===== */
+  .complete-wrap {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    gap: 20px;
+    text-align: center;
+  }
+  .success-circle {
+    width: 100px; height: 100px;
+    background: linear-gradient(135deg, var(--line-green) 0%, var(--line-green-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    box-shadow: 0 8px 32px rgba(6,199,85,0.3);
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .complete-title { font-family: 'Noto Serif JP', serif; font-size: 22px; color: var(--seki-dark); font-weight: 700; }
+  .complete-subtitle { font-size: 14px; color: var(--gray-600); line-height: 1.8; }
+  .points-gift {
+    background: var(--seki-light);
+    border-radius: 16px;
+    padding: 16px 24px;
+    border: 1.5px dashed var(--accent-gold);
+    width: 100%;
+  }
+  .points-gift .pg-label { font-size: 12px; color: var(--seki-warm); margin-bottom: 4px; }
+  .points-gift .pg-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 36px;
+    color: var(--accent-gold);
+    font-weight: 500;
+  }
+  .points-gift .pg-unit { font-size: 14px; }
+  .go-card-btn {
+    background: var(--line-green);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(6,199,85,0.3);
+  }
+
+  /* ===== Scrollbar hidden ===== */
+  .screen-content { scrollbar-width: none; }
+
+  /* ===== Multiple phones layout ===== */
+  .multi-phones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .phone-wrap .screen-label { color: #888; font-size: 12px; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="label">LINE Mini App Mock · Step 3</div>
+  <h1>関家具　会員証・ポイントアプリ</h1>
+  <p>画面を切り替えてモックをご確認ください</p>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="showScreen('s1')">① 会員証TOP</button>
+  <button class="nav-btn" onclick="showScreen('s2')">② 会員登録</button>
+  <button class="nav-btn" onclick="showScreen('s3')">③ ポイント履歴</button>
+  <button class="nav-btn" onclick="showScreen('s4')">④ ポイント利用</button>
+  <button class="nav-btn" onclick="showScreen('s5')">⑤ クーポン</button>
+  <button class="nav-btn" onclick="showScreen('s6')">⑥ 登録完了</button>
+</div>
+
+<div class="screens-wrap">
+
+  <!-- ① 会員証TOP -->
+  <div class="screen-panel active" id="s1">
+    <div class="phone">
+      <div class="status-bar">
+        <div class="notch"></div>
+        <span class="time">9:41</span>
+        <div class="icons">
+          <span>●●●</span><span>WiFi</span><span>🔋</span>
+        </div>
+      </div>
+      <div class="line-header">
+        <span class="back">☰</span>
+        <h2>関家具 会員証</h2>
+        <span class="right"></span>
+      </div>
+      <div class="screen-content">
+        <div class="member-card-wrap">
+          <div class="store-banner">
+            <div class="store-logo">関　家　具</div>
+            <div class="store-tagline">SEKI FURNITURE · MEMBER</div>
+            <div class="member-info">
+              <div>
+                <div class="member-name">田中　太郎 様</div>
+                <div class="member-id">No. 1234-5678-9012</div>
+              </div>
+              <div class="member-rank">SILVER</div>
+            </div>
+          </div>
+
+          <div class="barcode-section">
+            <div class="barcode-label">レジでご提示ください</div>
+            <div class="barcode-img"></div>
+            <div class="barcode-number">1 2 3 4 5 6 7 8 9 0 1 2</div>
+          </div>
+
+          <div class="points-row">
+            <div class="points-card">
+              <div class="pt-label">現在のポイント</div>
+              <div>
+                <span class="pt-value">2,450</span>
+                <span class="pt-unit">pt</span>
+              </div>
+              <div class="pt-expire">有効期限：2026/12/31</div>
+            </div>
+            <div class="points-card">
+              <div class="pt-label">今月の獲得</div>
+              <div>
+                <span class="pt-value">320</span>
+                <span class="pt-unit">pt</span>
+              </div>
+              <div class="pt-expire">来月繰越</div>
+            </div>
+          </div>
+
+          <button class="use-btn">ポイントを使う</button>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <span class="tab-icon">💳</span>
+          <span>会員証</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⭐</span>
+          <span>ポイント</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">🎫</span>
+          <span>クーポン</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">👤</span>
+          <span>マイページ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 会員登録 -->
+  <div class="screen-panel" id="s2">
+    <div class="phone">
+      <div class="status-bar">
+        <div class="notch"></div>
+        <span class="time">9:41</span>
+        <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="line-header">
+        <span class="back">←</span>
+        <h2>会員登録</h2>
+        <span class="right"></span>
+      </div>
+      <div class="screen-content">
+        <div class="register-wrap">
+          <div class="register-hero">
+            <div class="hero-icon">🪑</div>
+            <h3>関家具メンバーズへ<br>ようこそ</h3>
+            <p>お買い物でポイントが貯まり、<br>お得なクーポンが届きます。</p>
+          </div>
+
+          <div class="benefits-box">
+            <div class="b-title">✨ 会員特典</div>
+            <div class="benefit-item"><span>🎁</span><span>新規登録で <strong>100ポイント</strong> プレゼント</span></div>
+            <div class="benefit-item"><span>💰</span><span>お買い物 100円 = 1ポイント積立</span></div>
+            <div class="benefit-item"><span>📬</span><span>セール先行案内・限定クーポン配信</span></div>
+          </div>
+
+          <div class="form-group">
+            <label>お名前<span class="req">*</span></label>
+            <input class="form-input filled" type="text" value="田中　太郎" readonly>
+          </div>
+          <div class="form-group">
+            <label>電話番号<span class="req">*</span></label>
+            <input class="form-input filled" type="tel" value="090-1234-5678" readonly>
+            <div class="form-hint">既存会員の方はポイントが引き継がれます</div>
+          </div>
+          <div class="form-group">
+            <label>生年月日<span class="req">*</span></label>
+            <input class="form-input" type="text" placeholder="例：1985/04/15">
+          </div>
+          <div class="form-group">
+            <label>お住まいの都道府県</label>
+            <input class="form-input" type="text" placeholder="例：神奈川県">
+          </div>
+
+          <button class="submit-btn">会員登録する</button>
+          <div class="agree-text">
+            登録することで<a href="#">利用規約</a>および<a href="#">プライバシーポリシー</a>に<br>同意したものとみなされます。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ ポイント履歴 -->
+  <div class="screen-panel" id="s3">
+    <div class="phone">
+      <div class="status-bar">
+        <div class="notch"></div>
+        <span class="time">9:41</span>
+        <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="line-header">
+        <span class="back">←</span>
+        <h2>ポイント</h2>
+        <span class="right"></span>
+      </div>
+      <div class="screen-content">
+        <div class="points-wrap">
+          <div class="points-summary">
+            <div class="ps-label">現在のポイント残高</div>
+            <div>
+              <span class="ps-value">2,450</span>
+              <span class="ps-unit">pt</span>
+            </div>
+            <div class="ps-expire">有効期限：2026年12月31日</div>
+            <div class="points-actions">
+              <div class="pt-action-btn">履歴を見る</div>
+              <div class="pt-action-btn primary">ポイントを使う</div>
+            </div>
+          </div>
+          <div class="history-section">
+            <div class="section-title">取引履歴（直近）</div>
+            <div class="history-list">
+              <div class="history-item">
+                <div class="h-icon earn">🛒</div>
+                <div class="h-info">
+                  <div class="h-title">お買い物ポイント</div>
+                  <div class="h-date">2026/03/22 　関家具 横浜店</div>
+                </div>
+                <div class="h-pts earn">+320pt</div>
+              </div>
+              <div class="history-item">
+                <div class="h-icon use">💳</div>
+                <div class="h-info">
+                  <div class="h-title">ポイント利用</div>
+                  <div class="h-date">2026/03/15 　関家具 横浜店</div>
+                </div>
+                <div class="h-pts use">-500pt</div>
+              </div>
+              <div class="history-item">
+                <div class="h-icon earn">🛒</div>
+                <div class="h-info">
+                  <div class="h-title">お買い物ポイント</div>
+                  <div class="h-date">2026/03/10 　関家具 横浜店</div>
+                </div>
+                <div class="h-pts earn">+180pt</div>
+              </div>
+              <div class="history-item">
+                <div class="h-icon earn">🎁</div>
+                <div class="h-info">
+                  <div class="h-title">新規登録ボーナス</div>
+                  <div class="h-date">2026/02/01</div>
+                </div>
+                <div class="h-pts earn">+100pt</div>
+              </div>
+              <div class="history-item">
+                <div class="h-icon expire">⏰</div>
+                <div class="h-info">
+                  <div class="h-title">ポイント失効</div>
+                  <div class="h-date">2025/12/31</div>
+                </div>
+                <div class="h-pts expire">-200pt</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><span class="tab-icon">💳</span><span>会員証</span></div>
+        <div class="tab-item active"><span class="tab-icon">⭐</span><span>ポイント</span></div>
+        <div class="tab-item"><span class="tab-icon">🎫</span><span>クーポン</span></div>
+        <div class="tab-item"><span class="tab-icon">👤</span><span>マイページ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ ポイント利用 -->
+  <div class="screen-panel" id="s4">
+    <div class="phone">
+      <div class="status-bar">
+        <div class="notch"></div>
+        <span class="time">9:41</span>
+        <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="line-header">
+        <span class="back">←</span>
+        <h2>ポイントを使う</h2>
+        <span class="right"></span>
+      </div>
+      <div class="screen-content">
+        <div class="use-wrap">
+          <div class="balance-display">
+            <div class="bd-label">利用可能ポイント</div>
+            <div>
+              <span class="bd-value">2,450</span>
+              <span class="bd-unit"> pt</span>
+            </div>
+            <div class="bd-yen">= 最大 2,450円 値引き</div>
+          </div>
+
+          <div class="input-section">
+            <label>使用するポイント数を入力</label>
+            <div class="pt-input-row">
+              <input class="pt-input" type="number" value="500" min="1" max="2450">
+              <span class="pt-input-unit">pt</span>
+            </div>
+            <div class="quick-btns">
+              <button class="quick-btn">100pt</button>
+              <button class="quick-btn">500pt</button>
+              <button class="quick-btn">1,000pt</button>
+              <button class="quick-btn">全て</button>
+            </div>
+          </div>
+
+          <div class="conversion-box">
+            <span class="cv-label">値引き額</span>
+            <span class="cv-value">− 500円</span>
+          </div>
+
+          <div style="background:#FFF8E6;border-radius:12px;padding:14px 16px;font-size:12px;color:#8B6914;line-height:1.8;">
+            ⚠️ ポイントの利用は店員の承認が必要です。<br>申請後、店員に画面をご提示ください。
+          </div>
+
+          <button class="use-btn" style="font-size:16px;padding:16px;">500pt 利用を申請する</button>
+          <button style="background:none;border:none;color:var(--gray-400);font-size:14px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ クーポン -->
+  <div class="screen-panel" id="s5">
+    <div class="phone">
+      <div class="status-bar">
+        <div class="notch"></div>
+        <span class="time">9:41</span>
+        <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="line-header">
+        <span class="back">←</span>
+        <h2>クーポン</h2>
+        <span class="right"></span>
+      </div>
+      <div class="screen-content">
+        <div class="coupons-wrap">
+          <div style="font-size:12px;color:var(--gray-400);text-align:center;padding:8px 0;">3件のクーポンが利用できます</div>
+
+          <div class="coupon-card">
+            <div class="coupon-left gold"></div>
+            <div class="coupon-body">
+              <div class="coupon-tag gold">会員限定</div>
+              <div class="coupon-title">新生活応援セール<br>10% OFF クーポン</div>
+              <div class="coupon-desc">ダイニングセット・ソファ対象。税込2万円以上のご購入で利用可。</div>
+              <div class="coupon-footer">
+                <div class="coupon-expire">有効期限：2026/04/30</div>
+                <button class="coupon-use-btn gold">使う</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="coupon-card">
+            <div class="coupon-left"></div>
+            <div class="coupon-body">
+              <div class="coupon-tag">友達紹介</div>
+              <div class="coupon-title">友達紹介で<br>500円 OFF</div>
+              <div class="coupon-desc">お友達が新規登録すると、あなたに500円OFFクーポンをプレゼント。</div>
+              <div class="coupon-footer">
+                <div class="coupon-expire">有効期限：2026/05/31</div>
+                <button class="coupon-use-btn">使う</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="coupon-card">
+            <div class="coupon-left blue"></div>
+            <div class="coupon-body">
+              <div class="coupon-tag blue">誕生日</div>
+              <div class="coupon-title">お誕生日特典<br>300ポイント プレゼント</div>
+              <div class="coupon-desc">お誕生日月にご来店でポイントを進呈。会員証提示でもらえます。</div>
+              <div class="coupon-footer">
+                <div class="coupon-expire">有効期限：2026/04/30</div>
+                <button class="coupon-use-btn" style="background:#2BA8A0;">もらう</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><span class="tab-icon">💳</span><span>会員証</span></div>
+        <div class="tab-item"><span class="tab-icon">⭐</span><span>ポイント</span></div>
+        <div class="tab-item active"><span class="tab-icon">🎫</span><span>クーポン</span></div>
+        <div class="tab-item"><span class="tab-icon">👤</span><span>マイページ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 登録完了 -->
+  <div class="screen-panel" id="s6">
+    <div class="phone">
+      <div class="status-bar">
+        <div class="notch"></div>
+        <span class="time">9:41</span>
+        <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="line-header">
+        <span class="back" style="opacity:0;">←</span>
+        <h2>登録完了</h2>
+        <span class="right"></span>
+      </div>
+      <div class="screen-content">
+        <div class="complete-wrap">
+          <div class="success-circle">✓</div>
+          <div class="complete-title">会員登録が<br>完了しました！</div>
+          <div class="complete-subtitle">
+            関家具メンバーズへようこそ。<br>
+            デジタル会員証が発行されました。<br>
+            ご来店時にご提示ください。
+          </div>
+          <div class="points-gift">
+            <div class="pg-label">🎁 新規登録ボーナス</div>
+            <div>
+              <span class="pg-value">100</span>
+              <span class="pg-unit" style="color:var(--accent-gold);font-weight:700;">pt プレゼント！</span>
+            </div>
+          </div>
+          <button class="go-card-btn">会員証を見る →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen-panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
